@@ -2,14 +2,14 @@
 
 void norm(vec3 *n, Shape *s, vec3 *pnt) {
 	switch (s.type) {
-	case PLANE_TYPE:
-		normPlane(n, (Plane *)s, pnt);
+	case SHAPE_PLANE:
+		normPlane(n, &s->plane, pnt);
 		break;
-	case SPHERE_TYPE:
-		normSphere(n, (Sphere *)s, pnt);
+	case SHAPE_SPHERE:
+		normSphere(n, &s->sphere, pnt);
 		break;
-	case TRIANGLE_TYPE:
-		normTriangle(n, (Triangle *)s, pnt);
+	case SHAPE_TRIANGLE:
+		normTriangle(n, &s->triangle, pnt);
 		break;
 	}
 }
