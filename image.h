@@ -1,16 +1,16 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-typedef struct Pixel_struct {
+typedef struct Color_struct {
 	char r;
 	char g;
 	char b;
-} Pixel;
+} Color;
 
 typedef struct ImageData_struct {
 	int width;
 	int height;
-	Pixel *pixels;
+	Color *pixels;
 } ImageData;
 
 ImageData *imageAlloc(int width, int height);
