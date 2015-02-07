@@ -57,7 +57,7 @@ void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, vec3 *up, float width, flo
 	cam->eye = *eye;
 	sub(&cam->view, screen, eye);
 
-	cross(&cam->right, &cam->view, up);
+	cross(&cam->right, up, &cam->view);
 	normalize(&cam->right);
 
 	cross(&cam->up, &cam->right, &cam->view);
