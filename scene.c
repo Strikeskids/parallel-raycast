@@ -17,17 +17,30 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 	shapeNorm(&norm, hit, pnt);
 
 	for (i=scene->lightCount;i-->0;) {
+		int shadowed = 0;
 		lightReaching(&source, &scene->lights[i], pnt);
+
+		vec3 toSource, sourcePnt, shadower;
+		lightCenter(&sourcePnt, &scene->lights[i]);
+		if (rayTrace(&shadower, scene, 1, &hit, pnt, &sourcePnt)) {
+			float toLight = distance(&sourcePnt, pnt), toObj = distance(&shadower, pnt);
+			if (toLight > toObj) {
+				shadowed = 1;
+			}
+		}
+
+
 		cur = (Color) {255, 255, 0};
 		colorMultiply(&cur, &source);
 		
-		vec3 toSource, sourcePnt;
-		lightCenter(&sourcePnt, &scene->lights[i]);
 		sub(&toSource, &sourcePnt, pnt);
 		normalize(&toSource);
-		
+
 		float decrease = dot(&norm, &toSource);
-		float intensity = decrease < 0 ? 0.25 : decrease*(1-0.25) + 0.25;
+		if (decrease < 0) {
+			shadowed = 1;
+		}
+		float intensity = shadowed ? 0.25 : decrease*(1-0.25) + 0.25;
 		colorScale(&cur, intensity);
 
 		colorAdd(&result, &result, &cur);
