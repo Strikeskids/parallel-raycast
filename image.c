@@ -19,32 +19,30 @@ void imageFree(ImageData *img) {
 	free(img);
 }
 
-#define CLIP_COLOR_COMPONENT(c) c < 0 ? 0 : c > 255 ? 255 : c
-
-void colorClip(Color *c) {
-	c->r = CLIP_COLOR_COMPONENT(c->r);
-	c->g = CLIP_COLOR_COMPONENT(c->g);
-	c->g = CLIP_COLOR_COMPONENT(c->g);
-}
+#define REPACK_COLOR(c, r, g, b) *c = (Color) {CLIP_COLOR_COMPONENT(r), CLIP_COLOR_COMPONENT(g), CLIP_COLOR_COMPONENT(b)}
+#define CLIP_COLOR_COMPONENT(c) c < 0 ? 0 : c > 255 ? 255 : (unsigned char) c
 
 void colorMultiply(Color *c, Color *bg) {
-	c->r = c->r * bg->r / 255;
-	c->g = c->g * bg->g / 255;
-	c->b = c->b * bg->b / 255;
-	colorClip(c);
+	int r, g, b;
+	r = (int) c->r * bg->r / 255;
+	g = (int) c->g * bg->g / 255;
+	b = (int) c->b * bg->b / 255;
+	REPACK_COLOR(c,r,g,b);
 }
 
 void colorScale(Color *c, float factor) {
-	c->r *= factor;
-	c->g *= factor;
-	c->b *= factor;
-	colorClip(c);
+	int r, g, b;
+	r = c->r * factor;
+	g = c->g * factor;
+	b = c->b * factor;
+	REPACK_COLOR(c,r,g,b);
 }
 
-void colorAdd(Color *dest, Color *a, Color *b) {
-	dest->r = a->r + b->r;
-	dest->g = a->g + b->g;
-	dest->b = a->b + b->b;
-	colorClip(dest);
+void colorAdd(Color *dest, Color *c1, Color *c2) {
+	int r, g, b;
+	r = c1->r + c2->r;
+	g = c1->g + c2->g;
+	b = c1->b + c2->b;
+	REPACK_COLOR(dest,r,g,b);
 }
 

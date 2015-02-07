@@ -2,9 +2,9 @@
 #define IMAGE_H
 
 typedef struct Color_struct {
-	char r;
-	char g;
-	char b;
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
 } Color;
 
 typedef struct ImageData_struct {
