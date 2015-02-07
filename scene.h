@@ -10,7 +10,7 @@
 typedef struct PointLight_struct {
 	int type;
 	vec3 pos;
-	Color lightcolor;
+	Color lightColor;
 } PointLight;
 
 typedef union Light_union {
@@ -35,9 +35,9 @@ typedef struct Scene_struct {
 	Camera camera;
 } Scene;
 
-void *sceneRender(ImageData *img, Scene *scene);
-Camera *cameraAlloc(vec3 *eye, vec3 *screen, float rotate, float width, float height);
-void cameraInit(Camera *c, vec3 *eye, vec3 *screen, float rotate, float width, float height);
+void sceneRender(ImageData *img, Scene *scene);
+Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height);
+void cameraInit(Camera *c, vec3 *eye, vec3 *screen, vec3 *up, float width, float height);
 void cameraPoint(vec3 *screen, Camera *c, float sx, float sy);
 void lightReaching(Color *color, Light *light, vec3 *dest);
 void lightCenter(vec3 *center, Light *light);

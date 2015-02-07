@@ -1,31 +1,31 @@
 #include "scene.h"
 #include "raytrace.h"
-#include <string.h>
+#include <stdlib.h>
 
 void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 	int i;
 	Color result, cur, source;
 
 	vec3 norm;
-	norm(&norm, hit, pnt);
+	shapeNorm(&norm, hit, pnt);
 
-	result = {0,0,0};
+	result = (Color) {0, 0, 0};
 
 	for (i=scene->lightCount;i-->0;) {
 		lightReaching(&source, &scene->lights[i], pnt);
-		cur = {255, 255, 0};
-		scale(&cur, &source);
+		cur = (Color) {255, 255, 0};
+		colorMultiply(&cur, &source);
 		
 		vec3 toSource, sourcePnt;
 		lightCenter(&sourcePnt, &scene->lights[i]);
 		subtract(&toSource, &sourcePnt, pnt);
 		normalize(&toSource);
 		
-		float decrease = dot(norm, toSource);
-		float intensity = angle < 0 ? 0.25 : decrease*(1-0.25) + 0.25;
-		scale(&cur, intensity);
+		float decrease = dot(&norm, &toSource);
+		float intensity = decrease < 0 ? 0.25 : decrease*(1-0.25) + 0.25;
+		colorScale(&cur, intensity);
 
-		add(&result, &result, &cur);
+		colorAdd(&result, &result, &cur);
 	}
 	
 	*color = result;
@@ -42,14 +42,14 @@ void sceneRender(ImageData *img, Scene *scene) {
 			cameraPoint(&screen, &scene->camera, (x+0.5)/img->width - 0.5, (y+0.5)/img->height - 0.5);
 
 			vec3 pnt;
-			Shape *hit = rayTrace(&pnt, scene, 0, NULL, &scene->camera.eye, screen);
+			Shape *hit = rayTrace(&pnt, scene, 0, NULL, &scene->camera.eye, &screen);
 	
 			gatherLight(&img->pixels[y*img->width+x], scene, &pnt, hit);
 		}
 	}
 }
 
-void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, float rotate, float width, float height) {
+void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, vec3 *up, float width, float height) {
 	cam->eye = *eye;
 	subtract(&cam->view, screen, eye);
 
@@ -90,7 +90,7 @@ void cameraPoint(vec3 *screen, Camera *c, float sx, float sy) {
 void lightReaching(Color *color, Light *light, vec3 *dest) {
 	switch (light->type) {
 		case LIGHT_POINT_SOURCE:
-			*color = light->pointLight.lightcolor;
+			*color = light->pointLight.lightColor;
 			return;
 	}
 }
