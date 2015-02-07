@@ -1,15 +1,20 @@
 #include "scene.h"
 #include "raytrace.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 	int i;
 	Color result, cur, source;
 
+	result = (Color) {0, 0, 0};
+	if (!hit) {
+		*color = result;
+		return;
+	}
+
 	vec3 norm;
 	shapeNorm(&norm, hit, pnt);
-
-	result = (Color) {0, 0, 0};
 
 	for (i=scene->lightCount;i-->0;) {
 		lightReaching(&source, &scene->lights[i], pnt);
@@ -38,7 +43,6 @@ void sceneRender(ImageData *img, Scene *scene) {
 
 	for (x=0;x<img->width;++x) {
 		for (y=0;y<img->height;++y) {
-
 			cameraPoint(&screen, &scene->camera, (x+0.5)/img->width - 0.5, (y+0.5)/img->height - 0.5);
 
 			vec3 pnt;
