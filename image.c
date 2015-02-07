@@ -1,5 +1,5 @@
 #include "image.h"
-#include <string.h>
+#include <stdlib.h>
 
 ImageData *imageAlloc(int width, int height) {
 	ImageData *img;
@@ -9,7 +9,7 @@ ImageData *imageAlloc(int width, int height) {
 	img->width = width;
 	img->height = height;
 
-	img->pixels = malloc(width*height*sizeof(Pixel));
+	img->pixels = malloc(width*height*sizeof(Color));
 
 	return img;
 }
@@ -19,32 +19,32 @@ void imageFree(ImageData *img) {
 	free(img);
 }
 
-#define VALIDATE_COLOR(c) c < 0 ? 0 : c > 255 ? 255 : c
+#define CLIP_COLOR_COMPONENT(c) c < 0 ? 0 : c > 255 ? 255 : c
 
-void revalidate(Color *c) {
-	c->r = VALIDATE_COLOR(c->r);
-	c->g = VALIDATE_COLOR(c->g);
-	c->g = VALIDATE_COLOR(c->g);
+void colorClip(Color *c) {
+	c->r = CLIP_COLOR_COMPONENT(c->r);
+	c->g = CLIP_COLOR_COMPONENT(c->g);
+	c->g = CLIP_COLOR_COMPONENT(c->g);
 }
 
-void scale(Color *c, Color *bg) {
+void colorMultiply(Color *c, Color *bg) {
 	c->r = c->r * bg->r / 255;
 	c->g = c->g * bg->g / 255;
 	c->b = c->b * bg->b / 255;
-	revalidate(c);
+	colorClip(c);
 }
 
-void scale(Color *c, float factor) {
+void colorScale(Color *c, float factor) {
 	c->r *= factor;
 	c->g *= factor;
 	c->b *= factor;
-	revalidate(c);
+	colorClip(c);
 }
 
-void add(Color *dest, Color *a, Color *b) {
+void colorAdd(Color *dest, Color *a, Color *b) {
 	dest->r = a->r + b->r;
 	dest->g = a->g + b->g;
 	dest->b = a->b + b->b;
-	revalidate(dest);
+	colorClip(dest);
 }
 
