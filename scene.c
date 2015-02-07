@@ -40,7 +40,7 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 		if (decrease < 0) {
 			shadowed = 1;
 		}
-		float intensity = shadowed ? 0.25 : decrease*(1-0.25) + 0.25;
+		float intensity = shadowed ? 0.25 : decrease*decrease*(1-0.25) + 0.25;
 		colorScale(&cur, intensity);
 
 		colorAdd(&result, &result, &cur);
