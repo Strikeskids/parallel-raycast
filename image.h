@@ -16,4 +16,9 @@ typedef struct ImageData_struct {
 ImageData *imageAlloc(int width, int height);
 void imageFree(ImageData *img);
 
+void scale(Color *c, Color *by);
+void scale(Color *c, float factor);
+void add(Color *dest, Color *aColor *b);
+
 #endif
+
