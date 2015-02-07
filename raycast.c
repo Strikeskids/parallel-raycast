@@ -24,8 +24,8 @@ float castSphere(Sphere *s, vec3 *pos, vec3 *dir) {
 	vec3 dif;
 
 	sub(&dif, pos, &s->pos);
-	b = dot(&dif, dir);
-	c = dot(pos, pos) + dot(&s->pos, &s->pos) - 2*dot(pos, &s->pos);
+	b = 2*dot(&dif, dir);
+	c = dot(pos, pos) + dot(&s->pos, &s->pos) - 2*dot(pos, &s->pos) - s->radius * s->radius;
 
 	d = b*b - 4*c;
 
