@@ -58,9 +58,7 @@ int main(int argc, char **argv) {
 
 	img = imageAlloc(WIDTH, HEIGHT);
 
-	cameraInit(&scene.camera, &((vec3) {0.5, 0.5, -1}), &((vec3) {0.5, 0.5, 0}), 0, 1, 1);
-
-	
+	cameraInit(&scene.camera, &((vec3) {0.5, 0.5, -1}), &((vec3) {0.5, 0.5, 0}), &((vec3) {0, 1, 0}), 1, 1);
 	sceneRender(img, &scene);
 
 	FILE *out;
