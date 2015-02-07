@@ -3,6 +3,27 @@
 
 #include "vector.h"
 #include "shape.h"
+#include "image.h"
+
+#define LIGHT_POINT_SOURCE 0
+
+typedef struct PointLight_struct {
+	int type;
+	vec3 pos;
+	Color lightcolor;
+} PointLight;
+
+typedef union Light_union {
+	int type;
+	PointLight pointLight;
+} Light;
+
+typedef struct Camera_struct {
+	vec3 eye;
+	vec3 view;
+	vec3 up;
+	vec3 right;
+} Camera;
 
 typedef struct Scene_struct {
 	int lightCount;
@@ -13,26 +34,6 @@ typedef struct Scene_struct {
 
 	Camera camera;
 } Scene;
-
-#define LIGHT_POINT_SOURCE 0
-
-typedef union Light_union {
-	int type;
-	PointLight pointLight;
-} Camera;
-
-typedef struct PointLight_struct {
-	int type;
-	vec3 pos;
-	Color lightcolor;
-} PointLight;
-
-typedef struct Camera_struct {
-	vec3 eye;
-	vec3 view;
-	vec3 up;
-	vec3 right;
-} Camera;
 
 void *sceneRender(ImageData *img, Scene *scene);
 Camera *cameraAlloc(vec3 *eye, vec3 *screen, float rotate, float width, float height);
