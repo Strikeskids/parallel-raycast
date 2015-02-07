@@ -12,6 +12,9 @@ typedef struct vec2_struct {
 	float y;
 } vec2;
 
+float distance(vec3 *a, vec3 *b);
+float distancesq(vec3 *a, vec3 *b);
+
 float mag(vec3 *v);
 float magsq(vec3 *v);
 

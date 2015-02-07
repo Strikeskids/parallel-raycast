@@ -1,6 +1,15 @@
 #include "vector.h"
 #include "math.h"
 
+float distance(vec3 *a, vec3 *b) {
+	return sqrt(distancesq(a, b));
+}
+float distancesq(vec3 *a, vec3 *b) {
+	vec3 dif;
+	sub(&dif, a, b);
+	return dot(&dif, &dif);
+}
+
 float mag(vec3 *v) {
 	return sqrt(dot(v,v));
 }
