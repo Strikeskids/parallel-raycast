@@ -4,6 +4,7 @@
 #include "vector.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 float castShape(Shape *s, vec3 *pos, vec3 *dir) {
 	switch (s->type) {
@@ -95,6 +96,7 @@ Shape *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, Shape **ignore, vec3 *
 			scale(&bestHit, t);
 			add(&bestHit, &bestHit, src);
 			bestShape = &scene->shapes[i];
+			bestT = t;
 		}
 	}
 
