@@ -28,10 +28,10 @@ void normalize2(vec2 *v) {
 }
 
 float dot(vec3 *a, vec3 *b) {
-	return a->x*b->x + a->y*b->y + a->z*b->z;
+	return a->x * b->x + a->y * b->y + a->z * b->z;
 }
 float dot2(vec2 *a, vec2 *b) {
-	return a->x*b->x + a->y*b->y;
+	return a->x * b->x + a->y * b->y;
 }
 
 void add(vec3 *dest, vec3 *a, vec3 *b) {
@@ -56,9 +56,9 @@ void sub2(vec2 *dest, vec2 *a, vec2 *b) {
 
 void cross(vec3 *dest, vec3 *a, vec3 *b) {
 	float x, y, z;
-	x = a->y*b->z - a->z*b->y;
-	y = a->z*b->x - a->z*b->z;
-	z = a->x*b->y - a->y*b->x;
+	x = a->y * b->z - a->z * b->y;
+	y = a->z * b->x - a->z * b->z;
+	z = a->x * b->y - a->y * b->x;
 	dest->x = x;
 	dest->y = y;
 	dest->z = z;
