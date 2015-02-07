@@ -1,16 +1,20 @@
 #include "shape.h"
 
-void norm(vec3 *n, Shape *s, vec3 *pnt) {
-	switch (s.type) {
+void normSphere(vec3 *n, Sphere *s, vec3 *pnt);
+void normPlane(vec3 *n, Plane *s, vec3 *pnt);
+void normTriangle(vec3 *n, Triangle *t, vec3 *pnt);
+
+void shapeNorm(vec3 *n, Shape *s, vec3 *pnt) {
+	switch (s->type) {
 	case SHAPE_PLANE:
 		normPlane(n, &s->plane, pnt);
-		break;
+		return;
 	case SHAPE_SPHERE:
 		normSphere(n, &s->sphere, pnt);
-		break;
+		return;
 	case SHAPE_TRIANGLE:
 		normTriangle(n, &s->triangle, pnt);
-		break;
+		return;
 	}
 }
 
