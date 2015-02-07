@@ -2,8 +2,10 @@
 #include "raycast.h"
 #include "raytrace.h"
 
-float castShape(Shape *s, vec3 *pos, vec3 *dir);
-	switch (shp->type) {
+#include <stdlib.h>
+
+float castShape(Shape *s, vec3 *pos, vec3 *dir) {
+	switch (s->type) {
 		case SHAPE_SPHERE:
 			return castSphere(&s->sphere, pos, dir);
 		case SHAPE_PLANE:
