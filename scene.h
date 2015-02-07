@@ -36,6 +36,7 @@ typedef struct Camera_struct {
 
 void *sceneRender(ImageData *img, Scene *scene);
 Camera *cameraAlloc(vec3 *eye, vec3 *screen, float rotate, float width, float height);
+void cameraInit(Camera *c, vec3 *eye, vec3 *screen, float rotate, float width, float height);
 void cameraPoint(vec3 *screen, Camera *c, float sx, float sy);
 void lightReaching(Color *color, Light *light, vec3 *dest);
 void lightCenter(vec3 *center, Light *light);

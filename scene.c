@@ -49,10 +49,7 @@ void sceneRender(ImageData *img, Scene *scene) {
 	}
 }
 
-Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height) {
-	Camera *cam;
-	cam = malloc(sizeof(Camera));
-
+void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, float rotate, float width, float height) {
 	cam->eye = *eye;
 	subtract(&cam->view, screen, eye);
 
@@ -64,6 +61,13 @@ Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height
 
 	scale(&cam->right, width);
 	scale(&cam->up, height);
+}
+
+Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height) {
+	Camera *cam;
+	cam = malloc(sizeof(Camera));
+
+	cameraInit(cam, eye, screen, up, width, height);
 	
 	return cam;
 }
