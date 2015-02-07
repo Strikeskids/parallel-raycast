@@ -57,7 +57,7 @@ void sub2(vec2 *dest, vec2 *a, vec2 *b) {
 void cross(vec3 *dest, vec3 *a, vec3 *b) {
 	float x, y, z;
 	x = a->y * b->z - a->z * b->y;
-	y = a->z * b->x - a->z * b->z;
+	y = a->z * b->x - a->x * b->z;
 	z = a->x * b->y - a->y * b->x;
 	dest->x = x;
 	dest->y = y;
