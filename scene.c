@@ -18,7 +18,7 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 		
 		vec3 toSource, sourcePnt;
 		lightCenter(&sourcePnt, &scene->lights[i]);
-		subtract(&toSource, &sourcePnt, pnt);
+		sub(&toSource, &sourcePnt, pnt);
 		normalize(&toSource);
 		
 		float decrease = dot(&norm, &toSource);
@@ -51,7 +51,7 @@ void sceneRender(ImageData *img, Scene *scene) {
 
 void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, vec3 *up, float width, float height) {
 	cam->eye = *eye;
-	subtract(&cam->view, screen, eye);
+	sub(&cam->view, screen, eye);
 
 	cross(&cam->right, &cam->view, up);
 	normalize(&cam->right);

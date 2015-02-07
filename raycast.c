@@ -1,6 +1,7 @@
 #include "math.h"
 #include "raycast.h"
 #include "raytrace.h"
+#include "vector.h"
 
 #include <stdlib.h>
 
@@ -22,7 +23,7 @@ float castSphere(Sphere *s, vec3 *pos, vec3 *dir) {
 	
 	vec3 dif;
 
-	subtract(&dif, pos, &s->pos);
+	sub(&dif, pos, &s->pos);
 	b = dot(&dif, dir);
 	c = dot(pos, pos) + dot(&s->pos, &s->pos) - 2*dot(pos, &s->pos);
 
@@ -40,15 +41,15 @@ float castPlane(Plane *s, vec3 *pos, vec3 *dir) {
 
 float lineSide(vec3 *n, vec3 *a, vec3 *b, vec3 *p) {
 	vec3 line, dir;
-	subtract(&line, b, a);
-	subtract(&dir, p, a);
+	sub(&line, b, a);
+	sub(&dir, p, a);
 	cross(&line, &line, &dir);
 	return dot(n, &line);
 }
 
 float castTriangle(Triangle *s, vec3 *pos, vec3 *dir) {
 	vec3 n, p;
-	norm(&n, s, &s->a);
+	shapeNorm(&n, (Shape *) s, &s->a);
 
 	float t = (dot(&n, &s->a) - dot(&n, pos)) / (dot(&n, dir));
 
@@ -74,7 +75,7 @@ Shape *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, Shape **ignore, vec3 *
 	Shape *bestShape;
 	vec3 bestHit;
 
-	subtract(&r, dest, src);
+	sub(&r, dest, src);
 	normalize(&r);
 
 	for (i=scene->shapeCount;i-->0;) {
