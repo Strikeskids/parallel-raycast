@@ -3,6 +3,10 @@
 
 #include "vector.h"
 
+#define SHAPE_PLANE 1
+#define SHAPE_SPHERE 2
+#define SHAPE_TRIANGLE 3
+
 typedef struct Sphere_struct {
 	int type;
 	vec3 pos;
@@ -28,10 +32,6 @@ typedef union Shape_union {
 	Plane plane;
 	Triangle triangle;
 } Shape;
-
-#define SHAPE_PLANE 0
-#define SHAPE_SPHERE 1
-#define SHAPE_TRIANGLE 2
 
 void shapeNorm(vec3 *n, Shape *s, vec3 *pnt);
 
