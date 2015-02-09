@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 
+#include "texture.h"
 #include "scene.h"
 #include "image.h"
 
@@ -16,38 +17,68 @@ void imageSave(FILE *out, ImageData *img) {
 #define HEIGHT 600
 
 Scene scene = (Scene) {
-	.shapeCount = 3,
-	.shapes = (Shape []) {
+	.objectCount = 4,
+	.objects = (SceneObject []) {
 		{
-			.sphere = {
+			.shape = { .sphere = {
 				.type = SHAPE_SPHERE,
 				.pos = {0.5,0.5,0.166667},
 				.radius = 0.166667,
-			}
+			} },
+			.texture = { .constant = {
+				.type = TEXTURE_CONSTANT,
+				.color = { 0, 0, 255 },
+			} },
 		},
 		{
-			.sphere = {
+			.shape = { .sphere = {
 				.type = SHAPE_SPHERE,
 				.pos = {0.8333333,0.5,0.5},
 				.radius = 0.166667,
-			}
+			} },
+			.texture = { .constant = {
+				.type = TEXTURE_CONSTANT,
+				.color = { 0, 255, 0 },
+			} },
 		},
 		{
-			.sphere = {
+			.shape = { .sphere = {
 				.type = SHAPE_SPHERE,
 				.pos = {0.333333,0.666667,0.666667},
 				.radius = 0.333333,
-			}
+			} },
+			.texture = { .constant = {
+				.type = TEXTURE_CONSTANT,
+				.color = { 255, 0, 0 },
+			} },
+		},
+		{
+			.shape = { .plane = {
+				.type = SHAPE_PLANE,
+				.pos = {0, 0.333333, 0},
+				.norm = {0, 1, 0},
+			} },
+			.texture = { .constant = {
+				.type = TEXTURE_CONSTANT,
+				.color = { 255, 255, 0 },
+			} },
 		},
 	},
 
-	.lightCount = 1,
+	.lightCount = 2,
 	.lights = (Light []) {
 		{
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 0.0, 1.0, -0.5 },
-				.lightColor = { 255, 255, 255 },
+				.lightColor = { 180, 180, 180 },
+			}
+		},
+		{
+			.pointLight = {
+				.type = LIGHT_POINT_SOURCE,
+				.pos = { 1.0, 1.0, -0.5 },
+				.lightColor = { 150, 0, 180 },
 			}
 		},
 	},
@@ -58,7 +89,7 @@ int main(int argc, char **argv) {
 
 	img = imageAlloc(WIDTH, HEIGHT);
 
-	cameraInit(&scene.camera, &((vec3) {0.5, 0.5, -1}), &((vec3) {0.5, 0.5, 0}), &((vec3) {0, 1, 0}), 1, 1);
+	cameraInit(&scene.camera, &((vec3) {0.5, 0.5, -1}), &((vec3) {0.5, 0.5, 0}), &((vec3) {0, 1, 0}), 1.0*WIDTH/HEIGHT, 1);
 	sceneRender(img, &scene);
 
 	FILE *out;
