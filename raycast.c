@@ -66,36 +66,37 @@ float castTriangle(Triangle *s, vec3 *pos, vec3 *dir) {
 	return s1*s2 >= 0 && s1*s3 >= 0 ? t : INFINITY;
 }
 
-Shape *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, Shape **ignore, vec3 *src, vec3 *dest) {
+SceneObject *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest) {
 	int i, j, skip;
 
 	vec3 r;
 	float t;
 
 	float bestT = INFINITY;
-	Shape *bestShape;
+	SceneObject *bestShape;
 	vec3 bestHit;
 
 	sub(&r, dest, src);
 	normalize(&r);
 
-	for (i=scene->shapeCount;i-->0;) {
+	for (i=scene->objectCount;i-->0;) {
 		skip = 0;
 		for (j=ignoreCount;j-->0;) {
-			if (ignore[j] == &scene->shapes[i]) {
+			if (ignore[j] == &scene->objects[i]) {
 				skip = 1;
 				break;
 			}
 		}
 		if (skip) continue;
 		
-		t = castShape(&scene->shapes[i], src, &r);
+		t = castShape(&scene->objects[i].shape, src, &r);
 
 		if (t >= 0 && t < bestT) {
 			bestHit = r;
 			scale(&bestHit, t);
 			add(&bestHit, &bestHit, src);
-			bestShape = &scene->shapes[i];
+
+			bestShape = &scene->objects[i];
 			bestT = t;
 		}
 	}

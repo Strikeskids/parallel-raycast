@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
+void gatherLight(Color *color, Scene *scene, vec3 *pnt, SceneObject *hit) {
 	int i;
 	Color result, cur, source;
 
@@ -14,7 +14,7 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 	}
 
 	vec3 norm;
-	shapeNorm(&norm, hit, pnt);
+	shapeNorm(&norm, &hit->shape, pnt);
 
 	for (i=scene->lightCount;i-->0;) {
 		int shadowed = 0;
@@ -29,8 +29,7 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, Shape *hit) {
 			}
 		}
 
-
-		cur = (Color) {255, 255, 0};
+		textureAt(&cur, &hit->texture);
 		colorMultiply(&cur, &source);
 		
 		sub(&toSource, &sourcePnt, pnt);
@@ -59,7 +58,7 @@ void sceneRender(ImageData *img, Scene *scene) {
 			cameraPoint(&screen, &scene->camera, (x+0.5)/img->width - 0.5, (y+0.5)/img->height - 0.5);
 
 			vec3 pnt;
-			Shape *hit = rayTrace(&pnt, scene, 0, NULL, &scene->camera.eye, &screen);
+			SceneObject *hit = rayTrace(&pnt, scene, 0, NULL, &scene->camera.eye, &screen);
 	
 			gatherLight(&img->pixels[y*img->width+x], scene, &pnt, hit);
 		}

@@ -5,7 +5,7 @@
 #include "vector.h"
 #include "scene.h"
 
-Shape *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, Shape **ignore, vec3 *src, vec3 *dest);
+SceneObject *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest);
 
 #endif
 
