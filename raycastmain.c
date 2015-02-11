@@ -58,9 +58,11 @@ Scene scene = (Scene) {
 				.pos = {0, 0.333333, 0},
 				.norm = {0, 1, 0},
 			} },
-			.texture = { .constant = {
-				.type = TEXTURE_CONSTANT,
-				.color = { 1, 1, 0 },
+			.texture = { .checkered = {
+				.type = TEXTURE_CHECKERED,
+				.checkSize = 0.1,
+				.color1 = { 1, 1, 0 },
+				.color2 = { 0, 1, 1 },
 			} },
 		},
 	},
