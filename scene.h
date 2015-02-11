@@ -5,6 +5,7 @@
 #include "shape.h"
 #include "texture.h"
 #include "image.h"
+#include "color.h"
 
 #define LIGHT_POINT_SOURCE 1
 

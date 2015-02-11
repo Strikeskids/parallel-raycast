@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "image.h"
+#include "color.h"
 
 #define TEXTURE_CONSTANT 1
 

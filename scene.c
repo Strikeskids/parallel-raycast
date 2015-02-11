@@ -60,7 +60,10 @@ void sceneRender(ImageData *img, Scene *scene) {
 			vec3 pnt;
 			SceneObject *hit = rayTrace(&pnt, scene, 0, NULL, &scene->camera.eye, &screen);
 	
-			gatherLight(&img->pixels[y*img->width+x], scene, &pnt, hit);
+			Color color;
+
+			gatherLight(&color, scene, &pnt, hit);
+			img->pixels[y*img->width+x] = colorPack(&color);
 		}
 	}
 }

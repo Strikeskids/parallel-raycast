@@ -10,7 +10,7 @@
 void imageSave(FILE *out, ImageData *img) {
 	fprintf(out, "P6 %d %d 255\n", img->width, img->height);
 
-	fwrite(img->pixels, sizeof(Color), img->width*img->height, out);
+	fwrite(img->pixels, sizeof(Pixel), img->width*img->height, out);
 }
 
 #define WIDTH 800
@@ -27,7 +27,7 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 0, 0, 255 },
+				.color = { 0, 0, 1 },
 			} },
 		},
 		{
@@ -38,7 +38,7 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 0, 255, 0 },
+				.color = { 0, 1, 0 },
 			} },
 		},
 		{
@@ -49,7 +49,7 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 255, 0, 0 },
+				.color = { 1, 0, 0 },
 			} },
 		},
 		{
@@ -60,7 +60,7 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 255, 255, 0 },
+				.color = { 1, 1, 0 },
 			} },
 		},
 	},
@@ -71,14 +71,14 @@ Scene scene = (Scene) {
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 0.0, 1.0, -0.5 },
-				.lightColor = { 180, 180, 180 },
+				.lightColor = { 0.7, 0.7, 0.7 },
 			}
 		},
 		{
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 1.0, 1.0, -0.5 },
-				.lightColor = { 150, 0, 180 },
+				.lightColor = { 0.4, 0, 0.7 },
 			}
 		},
 	},
