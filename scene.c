@@ -29,7 +29,7 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, SceneObject *hit) {
 			}
 		}
 
-		textureAt(&cur, &hit->texture);
+		textureAt(&cur, &hit->texture, pnt);
 		colorMultiply(&cur, &source);
 		
 		sub(&toSource, &sourcePnt, pnt);

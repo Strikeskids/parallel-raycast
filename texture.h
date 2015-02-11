@@ -15,7 +15,7 @@ typedef union Texture_union {
 	ConstantTexture constant;
 } Texture;
 
-void textureAt(Color *color, Texture *tex);
+void textureAt(Color *color, Texture *tex, vec3 *pos);
 
 #endif
 
