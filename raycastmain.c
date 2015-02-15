@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "texture.h"
+#include "material.h"
 #include "scene.h"
 #include "image.h"
 
@@ -27,7 +27,7 @@ Scene scene = (Scene) {
 				.pos = {0.5,0.5,0.166667},
 				.radius = 0.166667,
 			} },
-			.texture = { .constant = {
+			.material = { .constant = {
 				.type = TEXTURE_CONSTANT,
 				.specularness = 0.5,
 				.fresnel = 0.2,
@@ -42,7 +42,7 @@ Scene scene = (Scene) {
 				.pos = {0.8333333,0.5,0.5},
 				.radius = 0.166667,
 			} },
-			.texture = { .constant = {
+			.material = { .constant = {
 				.type = TEXTURE_CONSTANT,
 				.specularness = 0.5,
 				.fresnel = 0.2,
@@ -57,7 +57,7 @@ Scene scene = (Scene) {
 				.pos = {0.333333,0.666667,0.666667},
 				.radius = 0.333333,
 			} },
-			.texture = { .constant = {
+			.material = { .constant = {
 				.type = TEXTURE_CONSTANT,
 				.specularness = 0.5,
 				.fresnel = 0.2,
@@ -72,7 +72,7 @@ Scene scene = (Scene) {
 				.pos = {0, 0.333333, 0},
 				.norm = {0, 1, 0},
 			} },
-			.texture = { .checkered = {
+			.material = { .checkered = {
 				.type = TEXTURE_CHECKERED,
 				.specularness = 0.5,
 				.fresnel = 0.2,

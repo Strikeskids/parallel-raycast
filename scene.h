@@ -3,7 +3,7 @@
 
 #include "vector.h"
 #include "shape.h"
-#include "texture.h"
+#include "material.h"
 #include "image.h"
 #include "color.h"
 
@@ -30,7 +30,7 @@ typedef struct Camera_struct {
 
 typedef struct SceneObject_struct {
 	Shape shape;
-	Texture texture;
+	Material material;
 } SceneObject;
 
 typedef struct Scene_struct {

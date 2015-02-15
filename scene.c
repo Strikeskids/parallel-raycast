@@ -32,14 +32,14 @@ void lightModel(Color *out, SceneObject *obj, vec3 *norm, vec3 *pnt, Color *in, 
 	vbisNorm2 = vbisNorm * vbisNorm;
 	vinVbis = dot(&vin, &vbis);
 
-	specularness = textureSpecularness(&obj->texture);
+	specularness = materialSpecularness(&obj->material);
 
 	diffuseFactor = (1 - specularness) / M_PI;
 
-	fresnel = textureFresnel(&obj->texture);
+	fresnel = materialFresnel(&obj->material);
 	fresnel = fresnel + (1-fresnel) * pow(1-vinVbis, 5);
 
-	rough = textureRoughness(&obj->texture);
+	rough = materialRoughness(&obj->material);
 	rough2 = rough * rough;
 	krough = sqrt(2/M_PI) * rough;
 
@@ -51,8 +51,8 @@ void lightModel(Color *out, SceneObject *obj, vec3 *norm, vec3 *pnt, Color *in, 
 	specularFactor = specularness * slopeDistribution * roughIn * roughOut * fresnel;
 	specularFactor = specularness * specularFactor / (4 * M_PI * vinNorm * voutNorm);
 
-	textureSpecularAt(&specularColor, &obj->texture, pnt);
-	textureDiffuseAt(&diffuseColor, &obj->texture, pnt);
+	materialSpecularAt(&specularColor, &obj->material, pnt);
+	materialDiffuseAt(&diffuseColor, &obj->material, pnt);
 
 	colorScale(&specularColor, specularFactor);
 	colorScale(&diffuseColor, diffuseFactor);
