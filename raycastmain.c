@@ -92,6 +92,7 @@ Scene scene = (Scene) {
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 0.0, 1.0, -0.5 },
+				.power = 4,
 				.lightColor = { 1, 1, 1 },
 			}
 		},
@@ -99,6 +100,7 @@ Scene scene = (Scene) {
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 1.0, 1.0, -0.5 },
+				.power = 2,
 				.lightColor = { 0.8, 0, 1 },
 			}
 		},

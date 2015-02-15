@@ -12,6 +12,7 @@
 typedef struct PointLight_struct {
 	int type;
 	vec3 pos;
+	float power;
 	Color lightColor;
 } PointLight;
 

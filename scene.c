@@ -159,6 +159,7 @@ void lightReaching(Color *color, Light *light, vec3 *dest) {
 	switch (light->type) {
 		case LIGHT_POINT_SOURCE:
 			*color = light->pointLight.lightColor;
+			colorScale(color, light->pointLight.power);
 			return;
 	}
 }
