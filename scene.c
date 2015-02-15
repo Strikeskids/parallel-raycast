@@ -1,9 +1,68 @@
 #include "scene.h"
 #include "raytrace.h"
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
-void gatherLight(Color *color, Scene *scene, vec3 *pnt, SceneObject *hit) {
+#ifndef M_PI
+#define M_PI 3.1415926592653589
+#endif
+
+void lightModel(Color *out, SceneObject *obj, vec3 *norm, vec3 *pnt, Color *in, vec3 *from, vec3 *to) {
+	vec3 vout, vin, vbis;
+	float vinNorm, voutNorm, vbisNorm, vinVbis, vbisNorm2;
+	float fresnel, rough, rough2, krough, roughIn, roughOut, slopeDistribution;
+
+	float specularness, diffuseFactor, specularFactor;
+	Color diffuseColor, specularColor;
+
+	sub(&vin, from, pnt);
+	normalize(&vin);
+
+	sub(&vout, to, pnt);
+	normalize(&vout);
+
+	add(&vbis, &vout, &vin);
+	normalize(&vbis);
+
+	vinNorm = dot(norm, &vin);
+	voutNorm = dot(norm, &vout);
+	vbisNorm = dot(norm, &vbis);
+	vbisNorm2 = vbisNorm * vbisNorm;
+	vinVbis = dot(&vin, &vbis);
+
+	specularness = textureSpecularness(&obj->texture);
+
+	diffuseFactor = (1 - specularness) / M_PI;
+
+	fresnel = textureFresnel(&obj->texture);
+	fresnel = fresnel + (1-fresnel) * pow(1-vinVbis, 5);
+
+	rough = textureRoughness(&obj->texture);
+	rough2 = rough * rough;
+	krough = sqrt(2/M_PI) * rough;
+
+	roughIn = vinNorm / (vinNorm * (1 - krough) + krough);
+	roughOut = voutNorm / (voutNorm * (1 - krough) + krough);
+
+	slopeDistribution = exp((vbisNorm2 - 1) / (rough2 * vbisNorm2)) / (rough2 * vbisNorm2 * vbisNorm2);
+
+	specularFactor = specularness * slopeDistribution * roughIn * roughOut * fresnel;
+	specularFactor = specularness * specularFactor / (4 * M_PI * vinNorm * voutNorm);
+
+	textureSpecularAt(&specularColor, &obj->texture, pnt);
+	textureDiffuseAt(&diffuseColor, &obj->texture, pnt);
+
+	colorScale(&specularColor, specularFactor);
+	colorScale(&diffuseColor, diffuseFactor);
+
+	colorAdd(out, &specularColor, &diffuseColor);
+	colorScale(out, vinNorm < 0 ? 0 : vinNorm);
+	colorMultiply(out, in);
+}
+
+void gatherLight(Color *color, Scene *scene, vec3 *to, vec3 *pnt, SceneObject *hit) {
 	int i;
 	Color result, cur, source;
 
@@ -29,20 +88,10 @@ void gatherLight(Color *color, Scene *scene, vec3 *pnt, SceneObject *hit) {
 			}
 		}
 
-		textureAt(&cur, &hit->texture, pnt);
-		colorMultiply(&cur, &source);
-		
-		sub(&toSource, &sourcePnt, pnt);
-		normalize(&toSource);
-
-		float decrease = dot(&norm, &toSource);
-		if (decrease < 0) {
-			shadowed = 1;
+		if (!shadowed) {
+			lightModel(&cur, hit, &norm, pnt, &source, &sourcePnt, to);
+			colorAdd(&result, &result, &cur);
 		}
-		float intensity = shadowed ? 0.25 : decrease*(1-0.25) + 0.25;
-		colorScale(&cur, intensity);
-
-		colorAdd(&result, &result, &cur);
 	}
 	
 	*color = result;
@@ -62,7 +111,7 @@ void sceneRender(ImageData *img, Scene *scene) {
 	
 			Color color;
 
-			gatherLight(&color, scene, &pnt, hit);
+			gatherLight(&color, scene, &scene->camera.eye, &pnt, hit);
 			img->pixels[y*img->width+x] = colorPack(&color);
 		}
 	}

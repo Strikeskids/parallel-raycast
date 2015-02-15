@@ -16,6 +16,8 @@ void imageSave(FILE *out, ImageData *img) {
 #define WIDTH 800
 #define HEIGHT 600
 
+#define WHITE { 1, 1, 1 }
+
 Scene scene = (Scene) {
 	.objectCount = 4,
 	.objects = (SceneObject []) {
@@ -27,7 +29,11 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 0, 0, 1 },
+				.specularness = 0.5,
+				.fresnel = 0.2,
+				.roughness = 0.2,
+				.diffuse = { 0, 0, 1 },
+				.specular = WHITE,
 			} },
 		},
 		{
@@ -38,7 +44,11 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 0, 1, 0 },
+				.specularness = 0.5,
+				.fresnel = 0.2,
+				.roughness = 0.2,
+				.diffuse = { 0, 1, 0 },
+				.specular = WHITE,
 			} },
 		},
 		{
@@ -49,7 +59,11 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .constant = {
 				.type = TEXTURE_CONSTANT,
-				.color = { 1, 0, 0 },
+				.specularness = 0.5,
+				.fresnel = 0.2,
+				.roughness = 0.2,
+				.diffuse = { 1, 0, 0 },
+				.specular = WHITE,
 			} },
 		},
 		{
@@ -60,9 +74,14 @@ Scene scene = (Scene) {
 			} },
 			.texture = { .checkered = {
 				.type = TEXTURE_CHECKERED,
+				.specularness = 0.5,
+				.fresnel = 0.2,
+				.roughness = 0.2,
 				.checkSize = 0.1,
-				.color1 = { 1, 1, 0 },
-				.color2 = { 0, 1, 1 },
+				.diffuse1 = { 1, 1, 0 },
+				.diffuse2 = { 0, 1, 1 },
+				.specular1 = WHITE,
+				.specular2 = WHITE,
 			} },
 		},
 	},
@@ -73,14 +92,14 @@ Scene scene = (Scene) {
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 0.0, 1.0, -0.5 },
-				.lightColor = { 0.7, 0.7, 0.7 },
+				.lightColor = { 1, 1, 1 },
 			}
 		},
 		{
 			.pointLight = {
 				.type = LIGHT_POINT_SOURCE,
 				.pos = { 1.0, 1.0, -0.5 },
-				.lightColor = { 0.4, 0, 0.7 },
+				.lightColor = { 0.8, 0, 1 },
 			}
 		},
 	},
