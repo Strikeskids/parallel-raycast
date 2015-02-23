@@ -16,6 +16,9 @@ void materialSpecularAt(Color *c, Material *tex, vec3 *pos) {
 	case MATERIAL_CHECKERED:
 		materialCheckeredSpecularAt(c, &tex->checkered, pos);
 		return;
+	case MATERIAL_FUNCTION:
+		*c = tex->func.specular;
+		return;
 	}
 }
 
@@ -32,6 +35,9 @@ void materialDiffuseAt(Color *c, Material *tex, vec3 *pos) {
 		return;
 	case MATERIAL_CHECKERED:
 		materialCheckeredDiffuseAt(c, &tex->checkered, pos);
+		return;
+	case MATERIAL_FUNCTION:
+		tex->func.diffuse(c, &tex->func, pos);
 		return;
 	}
 }
