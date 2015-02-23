@@ -18,7 +18,7 @@ void imageSave(FILE *out, ImageData *img) {
 
 #define WHITE { 1, 1, 1 }
 
-Scene scene = (Scene) {
+Scene scene = {
 	.objectCount = 4,
 	.objects = (SceneObject []) {
 		{
