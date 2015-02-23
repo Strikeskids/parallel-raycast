@@ -1,31 +1,31 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
 #include "color.h"
 #include "vector.h"
 
-#define TEXTURE_CONSTANT 0x1
-#define TEXTURE_CHECKERED 0x2
-#define TEXTURE_NON_BASE 0x8000
+#define MATERIAL_CONSTANT 0x1
+#define MATERIAL_CHECKERED 0x2
+#define MATERIAL_NON_BASE 0x8000
 
-#define BASE_TEXTURE_STRUCT \
+#define BASE_MATERIAL_STRUCT \
 	int type; \
 	float fresnel; \
 	float roughness; \
 	float specularness;
 
 typedef struct BaseMaterial_struct {
-	BASE_TEXTURE_STRUCT
+	BASE_MATERIAL_STRUCT
 } BaseMaterial;
 
 typedef struct ConstantMaterial_struct {
-	BASE_TEXTURE_STRUCT
+	BASE_MATERIAL_STRUCT
 	Color specular;
 	Color diffuse;
 } ConstantMaterial;
 
 typedef struct CheckeredMaterial_struct {
-	BASE_TEXTURE_STRUCT
+	BASE_MATERIAL_STRUCT
 	float checkSize;
 	Color specular1;
 	Color specular2;

@@ -10,10 +10,10 @@ void materialCheckeredSpecularAt(Color *c, CheckeredMaterial *tex, vec3 *pos) {
 
 void materialSpecularAt(Color *c, Material *tex, vec3 *pos) {
 	switch (tex->type) {
-	case TEXTURE_CONSTANT:
+	case MATERIAL_CONSTANT:
 		*c = tex->constant.specular;
 		return;
-	case TEXTURE_CHECKERED:
+	case MATERIAL_CHECKERED:
 		materialCheckeredSpecularAt(c, &tex->checkered, pos);
 		return;
 	}
@@ -27,31 +27,31 @@ void materialCheckeredDiffuseAt(Color *c, CheckeredMaterial *tex, vec3 *pos) {
 
 void materialDiffuseAt(Color *c, Material *tex, vec3 *pos) {
 	switch (tex->type) {
-	case TEXTURE_CONSTANT:
+	case MATERIAL_CONSTANT:
 		*c = tex->constant.diffuse;
 		return;
-	case TEXTURE_CHECKERED:
+	case MATERIAL_CHECKERED:
 		materialCheckeredDiffuseAt(c, &tex->checkered, pos);
 		return;
 	}
 }
 
 float materialFresnel(Material *tex) {
-	if (!(tex->type & TEXTURE_NON_BASE)) {
+	if (!(tex->type & MATERIAL_NON_BASE)) {
 		return tex->base.fresnel;
 	}
 	return 0;
 }
 
 float materialRoughness(Material *tex) {
-	if (!(tex->type & TEXTURE_NON_BASE)) {
+	if (!(tex->type & MATERIAL_NON_BASE)) {
 		return tex->base.roughness;
 	}
 	return 0;
 }
 
 float materialSpecularness(Material *tex) {
-	if (!(tex->type & TEXTURE_NON_BASE)) {
+	if (!(tex->type & MATERIAL_NON_BASE)) {
 		return tex->base.specularness;
 	}
 	return 0;

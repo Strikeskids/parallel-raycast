@@ -28,7 +28,7 @@ Scene scene = {
 				.radius = 0.166667,
 			} },
 			.material = { .constant = {
-				.type = TEXTURE_CONSTANT,
+				.type = MATERIAL_CONSTANT,
 				.specularness = 0.5,
 				.fresnel = 0.2,
 				.roughness = 0.2,
@@ -43,7 +43,7 @@ Scene scene = {
 				.radius = 0.166667,
 			} },
 			.material = { .constant = {
-				.type = TEXTURE_CONSTANT,
+				.type = MATERIAL_CONSTANT,
 				.specularness = 0.5,
 				.fresnel = 0.2,
 				.roughness = 0.2,
@@ -58,7 +58,7 @@ Scene scene = {
 				.radius = 0.333333,
 			} },
 			.material = { .constant = {
-				.type = TEXTURE_CONSTANT,
+				.type = MATERIAL_CONSTANT,
 				.specularness = 0.5,
 				.fresnel = 0.2,
 				.roughness = 0.2,
@@ -73,7 +73,7 @@ Scene scene = {
 				.norm = {0, 1, 0},
 			} },
 			.material = { .checkered = {
-				.type = TEXTURE_CHECKERED,
+				.type = MATERIAL_CHECKERED,
 				.specularness = 0.5,
 				.fresnel = 0.2,
 				.roughness = 0.2,
