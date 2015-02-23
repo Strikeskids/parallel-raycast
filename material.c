@@ -40,17 +40,20 @@ float materialFresnel(Material *tex) {
 	if (!(tex->type & TEXTURE_NON_BASE)) {
 		return tex->base.fresnel;
 	}
+	return 0;
 }
 
 float materialRoughness(Material *tex) {
 	if (!(tex->type & TEXTURE_NON_BASE)) {
 		return tex->base.roughness;
 	}
+	return 0;
 }
 
 float materialSpecularness(Material *tex) {
 	if (!(tex->type & TEXTURE_NON_BASE)) {
 		return tex->base.specularness;
 	}
+	return 0;
 }
 
