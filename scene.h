@@ -9,6 +9,8 @@
 
 #define LIGHT_POINT_SOURCE 1
 
+#define RENDER_REFLECTIONS 3
+
 typedef struct PointLight_struct {
 	int type;
 	vec3 pos;

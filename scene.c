@@ -62,7 +62,7 @@ void lightModel(Color *out, SceneObject *obj, vec3 *norm, vec3 *pnt, Color *in, 
 	colorMultiply(out, in);
 }
 
-void gatherLight(Color *color, Scene *scene, vec3 *to, vec3 *pnt, SceneObject *hit) {
+void gatherLight(Color *color, int level, Scene *scene, vec3 *to, vec3 *pnt, SceneObject *hit) {
 	int i;
 	Color result, cur, source;
 
@@ -79,7 +79,7 @@ void gatherLight(Color *color, Scene *scene, vec3 *to, vec3 *pnt, SceneObject *h
 		int shadowed = 0;
 		lightReaching(&source, &scene->lights[i], pnt);
 
-		vec3 toSource, sourcePnt, shadower;
+		vec3 sourcePnt, shadower;
 		lightCenter(&sourcePnt, &scene->lights[i]);
 		if (rayTrace(&shadower, scene, 1, &hit, pnt, &sourcePnt)) {
 			float toLight = distance(&sourcePnt, pnt), toObj = distance(&shadower, pnt);
@@ -90,6 +90,26 @@ void gatherLight(Color *color, Scene *scene, vec3 *to, vec3 *pnt, SceneObject *h
 
 		if (!shadowed) {
 			lightModel(&cur, hit, &norm, pnt, &source, &sourcePnt, to);
+			colorAdd(&result, &result, &cur);
+		}
+	}
+
+	if (level < RENDER_REFLECTIONS) {
+		Color inp;
+		vec3 para, out, reflect, towards, bounced;
+		sub(&out, to, pnt);
+		normalize(&out);
+		para = norm;
+		scale(&para, 2*dot(&norm, &out));
+		sub(&reflect, &para, &out);
+
+		add(&towards, pnt, &reflect);
+
+		SceneObject *next = rayTrace(&bounced, scene, 1, &hit, pnt, &towards);
+		if (next) {
+			gatherLight(&inp, level+1, scene, pnt, &bounced, next);
+			lightModel(&cur, next, &norm, pnt, &inp, &bounced, to);
+
 			colorAdd(&result, &result, &cur);
 		}
 	}
@@ -111,7 +131,7 @@ void sceneRender(ImageData *img, Scene *scene) {
 	
 			Color color;
 
-			gatherLight(&color, scene, &scene->camera.eye, &pnt, hit);
+			gatherLight(&color, 0, scene, &scene->camera.eye, &pnt, hit);
 			img->pixels[y*img->width+x] = colorPack(&color);
 		}
 	}
