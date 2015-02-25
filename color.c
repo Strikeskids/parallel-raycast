@@ -18,6 +18,12 @@ void colorAdd(Color *dest, Color *c1, Color *c2) {
 	dest->b = c1->b + c2->b;
 }
 
+void colorSub(Color *dest, Color *c1, Color *c2) {
+	dest->r = c1->r - c2->r;
+	dest->g = c1->g - c2->g;
+	dest->b = c1->b - c2->b;
+}
+
 #define COLOR_COMPONENT(f) ((unsigned char) (f<0 ? 0 : (f>1 ? 255 : f*255)))
 
 Pixel colorPack(Color *c) {
