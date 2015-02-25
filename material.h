@@ -28,7 +28,7 @@ typedef struct ConstantMaterial_struct {
 typedef struct FunctionMaterial_struct {
 	BASE_MATERIAL_STRUCT
 	Color specular;
-	void (diffuse *)(Color *, FunctionMaterial *, vec3 *);
+	void (*diffuse)(Color *, struct FunctionMaterial_struct *, vec3 *);
 } FunctionMaterial;
 
 typedef struct CheckeredMaterial_struct {
