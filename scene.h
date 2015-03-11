@@ -6,10 +6,15 @@
 #include "material.h"
 #include "image.h"
 #include "color.h"
+#include "pcgrng.h"
 
 #define LIGHT_POINT_SOURCE 1
 
-#define RENDER_REFLECTIONS 3
+#define RENDER_REFLECTIONS 1
+#define SAMPLE_COUNT 32
+
+#define ROUGH_MIN 0.05
+#define ROUGH_MAX 0.8
 
 typedef struct PointLight_struct {
 	int type;
