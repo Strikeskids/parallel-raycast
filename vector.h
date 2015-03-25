@@ -39,4 +39,6 @@ void vecCast(vec3 *dest, vec2 *src);
 void scale(vec3 *v, float scale);
 void scale2(vec2 *v, float scale);
 
+void normThreeVec(vec3 *norm, vec3 *a, vec3 *b, vec3 *c);
+
 #endif
