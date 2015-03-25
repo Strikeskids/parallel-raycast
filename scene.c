@@ -225,15 +225,6 @@ void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, vec3 *up, float width, flo
 	scale(&cam->up, height);
 }
 
-Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height) {
-	Camera *cam;
-	cam = malloc(sizeof(Camera));
-
-	cameraInit(cam, eye, screen, up, width, height);
-	
-	return cam;
-}
-
 void cameraPoint(vec3 *screen, Camera *c, float sx, float sy) {
 	vec3 offx, offy, center;
 

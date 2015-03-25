@@ -52,7 +52,6 @@ typedef struct Scene_struct {
 
 void sceneRender(ImageData *img, Scene *scene);
 
-Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height);
 void cameraInit(Camera *c, vec3 *eye, vec3 *screen, vec3 *up, float width, float height);
 void cameraPoint(vec3 *screen, Camera *c, float sx, float sy);
 
