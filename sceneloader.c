@@ -335,6 +335,8 @@ int loadObjectFile(FacedObject *object, char *filename) {
 	verts = malloc(vertSpace * sizeof(vec3));
 	faces = malloc(faceSpace * sizeof(vec3));
 
+	lineptr = NULL;
+
 	while ((linelen = getline(&lineptr, &ptrsize, objfile)) != -1) {
 		if (linelen < 4) continue;
 		if (lineptr[0] == 'v') {
@@ -381,13 +383,12 @@ int loadObjectFile(FacedObject *object, char *filename) {
 
 int loadShapeFacedObject(FacedObject *object, yaml_document_t *doc, yaml_node_item_t item) {
 	yaml_node_t *node = yaml_document_get_node(doc, item);
-	yaml_node_item_t fit, radiusit;
+	yaml_node_item_t fit;
 	int failure;
 
 	object->type = SHAPE_OBJECT;
 
 	fit = findNode(doc, node, "file");
-	radiusit = findNode(doc, node, "radius");
 	
 	if (fit < 0)
 		return loadPrintError(5, doc, item, "Missing keys in faced object (file*)");
