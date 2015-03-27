@@ -6,6 +6,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+float lineSide(vec3 *n, vec3 *a, vec3 *b, vec3 *p) {
+	vec3 line, dir;
+	sub(&line, b, a);
+	sub(&dir, p, a);
+	cross(&line, &line, &dir);
+	return dot(n, &line);
+}
+
+float castThreeVec(vec3 *n, vec3 *a, vec3 *b, vec3 *c, vec3 *pos, vec3 *dir) {
+	vec3 p;
+
+	float t = (dot(n, a) - dot(n, pos)) / (dot(n, dir));
+
+	p = *dir;
+	scale(&p, t);
+	add(&p, &p, pos);
+
+	float s1, s2, s3;
+	s1 = lineSide(n, a, b, &p);
+	s2 = lineSide(n, b, c, &p);
+	s3 = lineSide(n, c, a, &p);
+
+	return s1*s2 >= 0 && s1*s3 >= 0 ? t : INFINITY;
+}
+
 float castShape(int *index, Shape *s, vec3 *pos, vec3 *dir) {
 	switch (s->type) {
 		case SHAPE_SPHERE:
@@ -14,7 +39,7 @@ float castShape(int *index, Shape *s, vec3 *pos, vec3 *dir) {
 			return castPlane(&s->plane, pos, dir);
 		case SHAPE_TRIANGLE:
 			return castTriangle(&s->triangle, pos, dir);
-		case SHAPE_FACED_OBJECT:
+		case SHAPE_OBJECT:
 			return castFacedObject(index, &s->facedObject, pos, dir);
 		default:
 			return INFINITY;
@@ -25,15 +50,16 @@ float castShape(int *index, Shape *s, vec3 *pos, vec3 *dir) {
 #define AXES_CHECK(n, l, h, p) (AXIS_CHECK(x, n, l, h, p) && AXIS_CHECK(y, n, l, h, p) && AXIS_CHECK(z, n, l, h, p))
 
 int castAxisRect(vec3 *norm, vec3 *low, vec3 *high, vec3 *pos, vec3 *dir) {
-	vec3 p;
+	vec3 p, *ps;
 
 	float t = (dot(norm, low) - dot(norm, pos)) / (dot(norm, dir));
 
 	p = *dir;
 	scale(&p, t);
 	add(&p, &p, pos);
+	ps = &p;
 
-	return AXES_CHECK(norm, low, high, p);
+	return AXES_CHECK(norm, low, high, ps);
 }
 
 #define AXIS_SET(a, value, v, orig) v = orig; v.a = value
@@ -44,26 +70,26 @@ float castFacedObject(int *index, FacedObject *fo, vec3 *pos, vec3 *dir) {
 	
 	int hit = 0;
 	AXES_SET(x, fo->low.x);
-	hit = castAxisRect((vec3) {1, 0, 0}, &low, &high, pos, dir);
+	hit = castAxisRect(&((vec3) {1, 0, 0}), &low, &high, pos, dir);
 	if (!hit) {
 	AXES_SET(x, fo->high.x);
-	hit = castAxisRect((vec3) {1, 0, 0}, &low, &high, pos, dir);
+	hit = castAxisRect(&((vec3) {1, 0, 0}), &low, &high, pos, dir);
 	}
 	if (!hit) {
 	AXES_SET(y, fo->low.y);
-	hit = castAxisRect((vec3) {0, 1, 0}, &low, &high, pos, dir);
+	hit = castAxisRect(&((vec3) {0, 1, 0}), &low, &high, pos, dir);
 	}
 	if (!hit) {
 	AXES_SET(y, fo->high.y);
-	hit = castAxisRect((vec3) {0, 1, 0}, &low, &high, pos, dir);
+	hit = castAxisRect(&((vec3) {0, 1, 0}), &low, &high, pos, dir);
 	}
 	if (!hit) {
 	AXES_SET(z, fo->low.z);
-	hit = castAxisRect((vec3) {0, 0, 1}, &low, &high, pos, dir);
+	hit = castAxisRect(&((vec3) {0, 0, 1}), &low, &high, pos, dir);
 	}
 	if (!hit) {
 	AXES_SET(z, fo->high.z);
-	hit = castAxisRect((vec3) {0, 0, 1}, &low, &high, pos, dir);
+	hit = castAxisRect(&((vec3) {0, 0, 1}), &low, &high, pos, dir);
 	}
 
 	int i, bestI = -1;
@@ -80,7 +106,7 @@ float castFacedObject(int *index, FacedObject *fo, vec3 *pos, vec3 *dir) {
 		}
 	}
 
-	index = bestI;
+	*index = bestI;
 	return best;
 }
 
@@ -105,35 +131,10 @@ float castPlane(Plane *s, vec3 *pos, vec3 *dir) {
 	return (dot(n, &s->pos) - dot(n, pos)) / (dot(n, dir));
 }
 
-float lineSide(vec3 *n, vec3 *a, vec3 *b, vec3 *p) {
-	vec3 line, dir;
-	sub(&line, b, a);
-	sub(&dir, p, a);
-	cross(&line, &line, &dir);
-	return dot(n, &line);
-}
-
 float castTriangle(Triangle *s, vec3 *pos, vec3 *dir) {
 	vec3 n;
-	shapeNorm(&n, (Shape *) s, NULL);
+	shapeNorm(&n, (Shape *) s, NULL, -1);
 	return castThreeVec(&n, &s->a, &s->b, &s->c, pos, dir);
-}
-
-float castThreeVec(vec3 *n, vec3 *a, vec3 *b, vec3 *c, vec3 *pos, vec3 *dir) {
-	vec3 p;
-
-	float t = (dot(n, a) - dot(n, pos)) / (dot(n, dir));
-
-	p = *dir;
-	scale(&p, t);
-	add(&p, &p, pos);
-
-	float s1, s2, s3;
-	s1 = lineSide(n, a, b, &p);
-	s2 = lineSide(n, b, c, &p);
-	s3 = lineSide(n, c, a, &p);
-
-	return s1*s2 >= 0 && s1*s3 >= 0 ? t : INFINITY;
 }
 
 int rayTrace(Ray *ray, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest) {
@@ -180,6 +181,9 @@ int rayTrace(Ray *ray, Scene *scene, int ignoreCount, SceneObject **ignore, vec3
 		ray->index = bestIndex;
 		return 1;
 	} else {
+		ray->object = NULL;
+		ray->index = -1;
+		ray->pnt = (vec3) {0, 0, 0};
 		return 0;
 	}
 }
