@@ -92,7 +92,7 @@ void normThreeVec(vec3 *n, vec3 *a, vec3 *b, vec3 *c) {
 	vec3 x, y;
 	sub(&x, b, a);
 	sub(&x, c, a);
-	cross(n, x, y);
+	cross(n, &x, &y);
 	normalize(n);
 }
 
