@@ -574,7 +574,7 @@ int loadMaterialBase(BaseMaterial *material, yaml_document_t *doc, yaml_node_ite
 		failure = loadFloat(&material->specularness, doc, specit);
 		if (failure) return failure;
 	} else {
-		material->fresnel = 0.5;
+		material->specularness = 0.5;
 	}
 	return 0;
 }
