@@ -1,0 +1,46 @@
+objects:
+    -
+        shape:
+            type: sphere
+            pos: [0.5, 0.5, 0.166667]
+            radius: 0.166667
+        material:
+            type: constant
+            diffuse: [0.5, 0.5, 1]
+    -
+        shape:
+            type: sphere
+            pos: [0.8333333,0.5,0.5]
+            radius: 0.166667
+        material:
+            type: constant
+            diffuse: [0, 1, 0]
+    -
+        shape:
+            type: sphere
+            pos: [.333, 0.6667, 0.6667]
+            radius: 0.333333
+        material:
+            type: constant
+            diffuse: [1, 0, 0]
+    - 
+        shape:
+            type: plane
+            pos: [0, 0.333, 0]
+            norm: [0, 1, 0]
+        material:
+            type: checkered
+            diffuse1: [1, 1, 0]
+            diffuse2: [0, 1, 1]
+lights:
+    -
+        type: point
+        pos: [ 0.0, 1.0, -0.5 ]
+        power: 4
+        color: [ 1, 1, 1 ]
+camera:
+    eye: [0.5, 0.5, -1]
+    screen: [0.5, 0.5, 0]
+    up: [0, 1, 0]
+    width: 1.5
+    height: 1
