@@ -32,15 +32,16 @@ objects:
             type: checkered
             diffuse1: [1, 1, 0]
             diffuse2: [0, 1, 1]
+            checksize: 0.2
 lights:
     -
         type: point
         pos: [ 0.0, 1.0, -0.5 ]
-        power: 4
+        power: 6
         color: [ 1, 1, 1 ]
 camera:
     eye: [0.5, 0.5, -1]
     screen: [0.5, 0.5, 0]
     up: [0, 1, 0]
-    width: 1.5
+    width: 1.33333333
     height: 1
