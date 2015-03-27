@@ -1,6 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
+#include <stdlib.h>
 #include "vector.h"
 
 #define SHAPE_PLANE 1
@@ -41,7 +42,7 @@ typedef struct FacedObject_struct {
 	vec3 *verts;
 	int faceCount;
 	Face *faces;
-}
+} FacedObject;
 
 typedef union Shape_union {
 	int type;

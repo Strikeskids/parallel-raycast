@@ -16,7 +16,7 @@ void shapeNorm(vec3 *n, Shape *s, vec3 *pnt, int index) {
 	case SHAPE_TRIANGLE:
 		normTriangle(n, &s->triangle, pnt);
 		return;
-	case SHAPE_FACED_OBJECT:
+	case SHAPE_OBJECT:
 		normFacedObject(n, &s->facedObject, pnt, index);
 		return;
 	}
