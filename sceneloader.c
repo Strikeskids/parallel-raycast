@@ -1,13 +1,35 @@
 #include "sceneloader.h"
 
+int loadFloat(float *f, yaml_document_t *doc, yaml_node_item_t item);
+int loadVec3(vec3 *v, yaml_document_t *doc, yaml_node_item_t vec3Item);
+int loadColor(Color *c, yaml_document_t *doc, yaml_node_item_t item);
+int loadPrintError(int returnCode, yaml_document_t *doc, yaml_node_item_t nodeItem, char *message);
+int loadMaterialBase(BaseMaterial *material, yaml_document_t *doc, yaml_node_item_t item);
+int loadMaterialConstant(ConstantMaterial *material, yaml_document_t *doc, yaml_node_item_t item);
+int loadMaterialCheckered(CheckeredMaterial *material, yaml_document_t *doc, yaml_node_item_t item);
+int loadMaterial(Material *material, yaml_document_t *doc, yaml_node_item_t item);
+int loadShape(Shape *shape, yaml_document_t *doc, yaml_node_item_t item);
+int loadShapeFacedObject(FacedObject *object, yaml_document_t *doc, yaml_node_item_t item);
+int loadObjectFile(FacedObject *object, char *filename);
+int loadShapeTriangle(Triangle *triangle, yaml_document_t *doc, yaml_node_item_t item);
+int loadShapePlane(Plane *plane, yaml_document_t *doc, yaml_node_item_t item);
+int loadShapeSphere(Sphere *sphere, yaml_document_t *doc, yaml_node_item_t item);
+int loadSceneObject(SceneObject *object, yaml_document_t *doc, yaml_node_item_t item);
+int loadPointLight(PointLight *light, yaml_document_t *doc, yaml_node_item_t item);
+int loadLight(Light *light, yaml_document_t *doc, yaml_node_item_t nodeIndex);
+int loadCamera(Camera *camera, yaml_document_t *doc, yaml_node_item_t item);
+int loadLights(Scene *scene, yaml_document_t *doc, yaml_node_item_t lightsItem);
+int loadObjects(Scene *scene, yaml_document_t *doc, yaml_node_item_t item);
+int findNode(yaml_document_t *doc, yaml_node_t *mapping, char *key);
+
 int sceneLoad(Scene *scene, char *fname) {
 	FILE *f;
 
-	f = fopen(fname);
+	f = fopen(fname, "r");
 	if (!f) return 1;
 
 	yaml_parser_t parser;
-	yaml_document_t doc;
+	yaml_document_t document;
 	int failure;
 
 	yaml_parser_initialize(&parser);
@@ -22,15 +44,17 @@ int sceneLoad(Scene *scene, char *fname) {
 	if (!main) return 2;
 	if (main->type != YAML_MAPPING_NODE) return 2;
 
+	fprintf(stderr, "Start loading...\n");
+
 	int lightsNode;
 	int objectsNode;
 	int cameraNode;
 
-	lightsNode = findNode(&document, main, "light");
+	lightsNode = findNode(&document, main, "lights");
 	objectsNode = findNode(&document, main, "objects");
 	cameraNode = findNode(&document, main, "camera");
 
-	loadLights(scene, &document, lightsNode);
+	failure = loadLights(scene, &document, lightsNode);
 	if (failure) return failure;
 	failure = loadCamera(&scene->camera, &document, cameraNode);
 	if (failure) return failure;
@@ -61,7 +85,7 @@ int loadObjects(Scene *scene, yaml_document_t *doc, yaml_node_item_t item) {
 		scene->objectCount = 0;
 		return 0;
 	}
-	yaml_node_item_t *item, *start, *end;
+	yaml_node_item_t *cur, *start, *end;
 	yaml_node_t *node = yaml_document_get_node(doc, item);
 
 	int count, failure;
@@ -77,8 +101,9 @@ int loadObjects(Scene *scene, yaml_document_t *doc, yaml_node_item_t item) {
 	scene->objects = malloc(sizeof(SceneObject) * count);
 	scene->objectCount = count;
 
-	for (item=start;item!=end;++item) {
-		failure = loadSceneObject(&scene->objects[item-start], doc, *item);
+
+	for (cur=start;cur!=end;++cur) {
+		failure = loadSceneObject(&scene->objects[cur-start], doc, *cur);
 		if (failure) return failure;
 	}
 	return 0;
@@ -97,7 +122,7 @@ int loadLights(Scene *scene, yaml_document_t *doc, yaml_node_item_t lightsItem) 
 	end = lights->data.sequence.items.top;
 	lightCount = end - start;
 
-	if (node->type != YAML_SEQUENCE_NODE || lightCount <= 0) {
+	if (lights->type != YAML_SEQUENCE_NODE || lightCount <= 0) {
 		scene->lightCount = 0;
 		return 0;
 	}
@@ -109,6 +134,7 @@ int loadLights(Scene *scene, yaml_document_t *doc, yaml_node_item_t lightsItem) 
 		failure = loadLight(&scene->lights[item-start], doc, *item);
 		if (failure) return failure;
 	}
+
 	return 0;
 }
 
@@ -117,14 +143,14 @@ int loadCamera(Camera *camera, yaml_document_t *doc, yaml_node_item_t item) {
 		return 0;
 	}
 	yaml_node_t *node = yaml_document_get_node(doc, item);
-	yaml_item_t eyeIt, screenIt, upIt, widthIt, heightIt;
+	yaml_node_item_t eyeIt, screenIt, upIt, widthIt, heightIt;
 	int failure;
 
-	eyeIt = findItem(doc, node, "eye");
-	screenIt = findItem(doc, node, "screen");
-	upIt = findItem(doc, node, "up");
-	widthIt = findItem(doc, node, "width");
-	heightIt = findItem(doc, node, "height");
+	eyeIt = findNode(doc, node, "eye");
+	screenIt = findNode(doc, node, "screen");
+	upIt = findNode(doc, node, "up");
+	widthIt = findNode(doc, node, "width");
+	heightIt = findNode(doc, node, "height");
 
 	if ((eyeIt | screenIt | upIt | widthIt | heightIt) < 0)
 		return loadPrintError(5, doc, item, "Missing keys in camera (eye*, screen*, up*, width*, height*)");
@@ -184,6 +210,7 @@ int loadPointLight(PointLight *light, yaml_document_t *doc, yaml_node_item_t ite
 }
 
 int loadSceneObject(SceneObject *object, yaml_document_t *doc, yaml_node_item_t item) {
+
 	yaml_node_t *node = yaml_document_get_node(doc, item);
 	yaml_node_item_t shapeit, materialit;
 	int failure;
@@ -199,7 +226,7 @@ int loadSceneObject(SceneObject *object, yaml_document_t *doc, yaml_node_item_t 
 	
 	failure = loadShape(&object->shape, doc, shapeit);
 	if (failure) return failure;
-	failure = loadShape(&object->material, doc, materialit);
+	failure = loadMaterial(&object->material, doc, materialit);
 	if (failure) return failure;
 
 	return 0;
@@ -230,7 +257,7 @@ int loadShapePlane(Plane *plane, yaml_document_t *doc, yaml_node_item_t item) {
 	yaml_node_item_t posit, normit;
 	int failure;
 
-	sphere->type = SHAPE_PLANE;
+	plane->type = SHAPE_PLANE;
 
 	posit = findNode(doc, node, "pos");
 	normit = findNode(doc, node, "norm");
@@ -250,7 +277,7 @@ int loadShapeTriangle(Triangle *triangle, yaml_document_t *doc, yaml_node_item_t
 	yaml_node_item_t vertit;
 	int failure;
 
-	sphere->type = SHAPE_TRIANGLE;
+	triangle->type = SHAPE_TRIANGLE;
 
 	vertit = findNode(doc, node, "v");
 	
@@ -267,7 +294,7 @@ int loadShapeTriangle(Triangle *triangle, yaml_document_t *doc, yaml_node_item_t
 
 	count = end-start;
 
-	if (vertit->type != YAML_SEQUENCE_NODE || count != 3)
+	if (vs->type != YAML_SEQUENCE_NODE || count != 3)
 		return loadPrintError(4, doc, vertit, "Need 3 vertices for a triangle");
 
 	vec3 vecs[3];
@@ -290,7 +317,8 @@ int loadObjectFile(FacedObject *object, char *filename) {
 	FILE *objfile = fopen(filename, "r");
 
 	char *lineptr;
-	int linelen, ptrsize;
+	int linelen;
+	size_t ptrsize;
 
 	int faceCount, faceSpace, vertCount, vertSpace;
 	int i;
@@ -314,7 +342,7 @@ int loadObjectFile(FacedObject *object, char *filename) {
 			sscanf(lineptr, "v %f %f %f\n", &cur.x, &cur.y, &cur.z);
 			if (vertCount >= vertSpace) {
 				vertSpace = vertSpace*2 + 1;
-				verts = realloc(verts, vertSpace * sizeof(vec3);
+				verts = realloc(verts, vertSpace * sizeof(vec3));
 			}
 			verts[vertCount++] = cur;
 		} else if (lineptr[0] == 'f') {
@@ -356,7 +384,7 @@ int loadShapeFacedObject(FacedObject *object, yaml_document_t *doc, yaml_node_it
 	yaml_node_item_t fit, radiusit;
 	int failure;
 
-	sphere->type = SHAPE_SPHERE;
+	object->type = SHAPE_OBJECT;
 
 	fit = findNode(doc, node, "file");
 	radiusit = findNode(doc, node, "radius");
@@ -392,8 +420,10 @@ int loadShape(Shape *shape, yaml_document_t *doc, yaml_node_item_t item) {
 	int length;
 	char *value;
 
-	value = node->data.scalar.value;
-	length = node->data.scalar.length;
+	yaml_node_t *type = yaml_document_get_node(doc, typeit);
+
+	value = type->data.scalar.value;
+	length = type->data.scalar.length;
 
 	if (!strncmp("sphere", value, length)) {
 		return loadShapeSphere(&shape->sphere, doc, item);
@@ -424,8 +454,10 @@ int loadMaterial(Material *material, yaml_document_t *doc, yaml_node_item_t item
 	int length;
 	char *value;
 
-	value = node->data.scalar.value;
-	length = node->data.scalar.length;
+	yaml_node_t *type = yaml_document_get_node(doc, typeit);
+
+	value = type->data.scalar.value;
+	length = type->data.scalar.length;
 
 	if (!strncmp("constant", value, length)) {
 		return loadMaterialConstant(&material->constant, doc, item);
@@ -439,6 +471,8 @@ int loadMaterial(Material *material, yaml_document_t *doc, yaml_node_item_t item
 int loadMaterialCheckered(CheckeredMaterial *material, yaml_document_t *doc, yaml_node_item_t item) {
 	yaml_node_t *node = yaml_document_get_node(doc, item);
 	yaml_node_item_t specular1it, specular2it, specularit, diffuseit, diffuse1it, diffuse2it;
+
+	int failure;
 
 	failure = loadMaterialBase((BaseMaterial *) material, doc, item);
 	if (failure) return failure;
@@ -528,19 +562,19 @@ int loadMaterialBase(BaseMaterial *material, yaml_document_t *doc, yaml_node_ite
 		failure = loadFloat(&material->fresnel, doc, fit);
 		if (failure) return failure;
 	} else {
-		material->fresnel = 0.2
+		material->fresnel = 0.2;
 	}
 	if (fit >= 0) {
 		failure = loadFloat(&material->roughness, doc, fit);
 		if (failure) return failure;
 	} else {
-		material->roughness = 0.2
+		material->roughness = 0.2;
 	}
 	if (specit >= 0) {
 		failure = loadFloat(&material->specularness, doc, specit);
 		if (failure) return failure;
 	} else {
-		material->fresnel = 0.5
+		material->fresnel = 0.5;
 	}
 	return 0;
 }
@@ -604,11 +638,13 @@ int loadFloat(float *f, yaml_document_t *doc, yaml_node_item_t item) {
 	char scal[100];
 	yaml_node_t *node = yaml_document_get_node(doc, item);
 	if (node->type != YAML_SCALAR_NODE || node->data.scalar.length >= 100)
-		return loadPrintError(4, doc, start+i, "Expected float value");
+		return loadPrintError(4, doc, item, "Expected float value");
 
 	memcpy(scal, node->data.scalar.value, node->data.scalar.length);
 	scal[node->data.scalar.length] = '\0';
-	
+
 	*f = strtof(scal, NULL);
+
+	return 0;
 }
 

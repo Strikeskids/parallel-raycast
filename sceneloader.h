@@ -8,6 +8,6 @@
 #include "color.h"
 #include "material.h"
 
-void sceneLoad(Scene *scene, char *fname);
+int sceneLoad(Scene *scene, char *fname);
 
 #endif
