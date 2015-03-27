@@ -470,7 +470,7 @@ int loadMaterial(Material *material, yaml_document_t *doc, yaml_node_item_t item
 
 int loadMaterialCheckered(CheckeredMaterial *material, yaml_document_t *doc, yaml_node_item_t item) {
 	yaml_node_t *node = yaml_document_get_node(doc, item);
-	yaml_node_item_t specular1it, specular2it, specularit, diffuseit, diffuse1it, diffuse2it;
+	yaml_node_item_t specular1it, specular2it, specularit, diffuseit, diffuse1it, diffuse2it, checkit;
 
 	int failure;
 
@@ -485,6 +485,7 @@ int loadMaterialCheckered(CheckeredMaterial *material, yaml_document_t *doc, yam
 	diffuse1it = findNode(doc, node, "diffuse1");
 	specular2it = findNode(doc, node, "specular2");
 	diffuse2it = findNode(doc, node, "diffuse2");
+	checkit = findNode(doc, node, "checksize");
 
 	if ((diffuseit & (diffuse1it | diffuse2it)) < 0)
 		return loadPrintError(5, doc, item, "Missing key in material (diffuse*) or (diffuse1*, diffuse2*)");
@@ -516,6 +517,13 @@ int loadMaterialCheckered(CheckeredMaterial *material, yaml_document_t *doc, yam
 		if (failure) return failure;
 		failure = loadColor(&material->diffuse2, doc, diffuse2it);
 		if (failure) return failure;
+	}
+
+	if (checkit >= 0) {
+		failure = loadFloat(&material->checkSize, doc, checkit);
+		if (failure) return failure;
+	} else {
+		material->checkSize = 0.2;
 	}
 	
 	return 0;
