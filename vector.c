@@ -91,7 +91,7 @@ void scale2(vec2 *v, float scale) {
 void normThreeVec(vec3 *n, vec3 *a, vec3 *b, vec3 *c) {
 	vec3 x, y;
 	sub(&x, b, a);
-	sub(&x, c, a);
+	sub(&y, c, a);
 	cross(n, &x, &y);
 	normalize(n);
 }
