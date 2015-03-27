@@ -46,7 +46,7 @@ float castShape(int *index, Shape *s, vec3 *pos, vec3 *dir) {
 	}
 }
 
-#define AXIS_CHECK(c, n, l, h, p) (n->c == 0 ? 1 : l->c <= p->c && p->c <= h->c)
+#define AXIS_CHECK(c, n, l, h, p) (n->c != 0 ? 1 : l->c <= p->c && p->c <= h->c)
 #define AXES_CHECK(n, l, h, p) (AXIS_CHECK(x, n, l, h, p) && AXIS_CHECK(y, n, l, h, p) && AXIS_CHECK(z, n, l, h, p))
 
 int castAxisRect(vec3 *norm, vec3 *low, vec3 *high, vec3 *pos, vec3 *dir) {
@@ -69,8 +69,10 @@ float castFacedObject(int *index, FacedObject *fo, vec3 *pos, vec3 *dir) {
 	vec3 low, high;
 	
 	int hit = 0;
+	if (!hit) {
 	AXES_SET(x, fo->low.x);
 	hit = castAxisRect(&((vec3) {1, 0, 0}), &low, &high, pos, dir);
+	}
 	if (!hit) {
 	AXES_SET(x, fo->high.x);
 	hit = castAxisRect(&((vec3) {1, 0, 0}), &low, &high, pos, dir);
@@ -90,6 +92,10 @@ float castFacedObject(int *index, FacedObject *fo, vec3 *pos, vec3 *dir) {
 	if (!hit) {
 	AXES_SET(z, fo->high.z);
 	hit = castAxisRect(&((vec3) {0, 0, 1}), &low, &high, pos, dir);
+	}
+
+	if (!hit) {
+		return INFINITY;
 	}
 
 	int i, bestI = -1;
