@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 	img = imageAlloc(WIDTH, HEIGHT);
 
 	Scene loaded;
-	if (sceneLoad(&loaded, "scene1.yml")) {
+	if (sceneLoad(&loaded, "scene2.yml")) {
 		fprintf(stderr, "Failed to load\n");
 		return 1;
 	}
