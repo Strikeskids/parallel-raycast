@@ -5,7 +5,13 @@
 #include "vector.h"
 #include "scene.h"
 
-SceneObject *rayTrace(vec3 *hit, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest);
+typedef struct Ray_struct {
+	vec3 pnt;
+	SceneObject *object;
+	int index;
+} Ray;
+
+int rayTrace(Ray *ray, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest);
 
 #endif
 

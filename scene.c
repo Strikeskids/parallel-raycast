@@ -118,45 +118,47 @@ void hemisphereSample(vec3 *samp, pcg32_random_t *p, vec3 *norm, vec3 *tan1, vec
 	add(samp, samp, &sc3);
 }
 
-void gatherLight(Color *color, pcg32_random_t *p, int level, Scene *scene, vec3 *to, vec3 *pnt, SceneObject *hit) {
+void gatherLight(Color *color, pcg32_random_t *p, int level, Scene *scene, vec3 *to, Ray *ray) {
 	int i;
 	Color result, cur, source;
 
 	result = (Color) {0, 0, 0};
-	if (!hit) {
+	if (!ray->object) {
 		*color = result;
 		return;
 	}
 
 	vec3 norm;
-	shapeNorm(&norm, &hit->shape, pnt);
+	shapeNorm(&norm, &ray->object->shape, &ray->pnt, ray->index);
 
 	for (i=scene->lightCount;i-->0;) {
 		int shadowed = 0;
-		lightReaching(&source, &scene->lights[i], pnt);
+		lightReaching(&source, &scene->lights[i], &ray->pnt);
 
-		vec3 sourcePnt, shadower;
+		vec3 sourcePnt;
+		Ray shadower;
 		lightCenter(&sourcePnt, &scene->lights[i]);
-		if (rayTrace(&shadower, scene, 1, &hit, pnt, &sourcePnt)) {
-			float toLight = distance(&sourcePnt, pnt), toObj = distance(&shadower, pnt);
+		if (rayTrace(&shadower, scene, 1, &ray->object, &ray->pnt, &sourcePnt)) {
+			float toLight = distance(&sourcePnt, &ray->pnt), toObj = distance(&shadower.pnt, &ray->pnt);
 			if (toLight > toObj) {
 				shadowed = 1;
 			}
 		}
 
 		if (!shadowed) {
-			lightModel(&cur, hit, &norm, pnt, &source, &sourcePnt, to);
+			lightModel(&cur, ray->object, &norm, &ray->pnt, &source, &sourcePnt, to);
 			colorAdd(&result, &result, &cur);
 		}
 	}
 
 	if (level < RENDER_REFLECTIONS) {
 		Color inp;
-		vec3 tan1, tan2, dir, towards, bounced;
+		vec3 tan1, tan2, dir, towards;
+		Ray bounced;
 		vec3 para, out, reflect;
 		int i;
 
-		sub(&out, to, pnt);
+		sub(&out, to, &ray->pnt);
 		normalize(&out);
 		para = norm;
 		scale(&para, 2*dot(&norm, &out));
@@ -164,18 +166,17 @@ void gatherLight(Color *color, pcg32_random_t *p, int level, Scene *scene, vec3 
 
 		sceneTangent1(&tan1, &reflect);
 		sceneTangent2(&tan2, &reflect, &tan1);
-		float maxphi = scenePhimax(hit);
+		float maxphi = scenePhimax(ray->object);
 
 		for (i=0;i<SAMPLE_COUNT;++i) {
 			hemisphereSample(&dir, p, &reflect, &tan1, &tan2, maxphi);
 			if (dot(&norm, &dir) < 0)
 				continue;
-			add(&towards, pnt, &dir);
+			add(&towards, &ray->pnt, &dir);
 
-			SceneObject *next = rayTrace(&bounced, scene, 1, &hit, pnt, &towards);
-			if (next) {
-				gatherLight(&inp, p, level+1, scene, pnt, &bounced, next);
-				lightModel(&cur, next, &norm, pnt, &inp, &bounced, to);
+			if (rayTrace(&bounced, scene, 1, &ray->object, &ray->pnt, &towards)) {
+				gatherLight(&inp, p, level+1, scene, &ray->pnt, &bounced);
+				lightModel(&cur, bounced.object, &norm, &ray->pnt, &inp, &bounced.pnt, to);
 				colorScale(&cur, 1.0/SAMPLE_COUNT);
 
 				colorAdd(&result, &result, &cur);
@@ -192,20 +193,20 @@ void sceneRender(ImageData *img, Scene *scene) {
 	#pragma omp parallel for collapse(2) private(x, y) shared(img, scene)
 	for (x=0;x<img->width;++x) {
 		for (y=0;y<img->height;++y) {
-			vec3 screen, pnt;
+			vec3 screen;
+			Ray ray;
 
 			pcg32_random_t p;
 			p.state = (uint64_t) rand()<<32 | rand();
 			p.inc = (uint64_t) rand()<<32 | rand();
 
-			SceneObject *hit;
 			Color color;
 
 			cameraPoint(&screen, &scene->camera, (x+0.5)/img->width - 0.5, (y+0.5)/img->height - 0.5);
 
-			hit = rayTrace(&pnt, scene, 0, NULL, &scene->camera.eye, &screen);
+			rayTrace(&ray, scene, 0, NULL, &scene->camera.eye, &screen);
 
-			gatherLight(&color, &p, 0, scene, &scene->camera.eye, &pnt, hit);
+			gatherLight(&color, &p, 0, scene, &scene->camera.eye, &ray);
 			img->pixels[y*img->width+x] = colorPack(&color);
 		}
 	}
@@ -223,15 +224,6 @@ void cameraInit(Camera *cam, vec3 *eye, vec3 *screen, vec3 *up, float width, flo
 
 	scale(&cam->right, width);
 	scale(&cam->up, height);
-}
-
-Camera *cameraAlloc(vec3 *eye, vec3 *screen, vec3 *up, float width, float height) {
-	Camera *cam;
-	cam = malloc(sizeof(Camera));
-
-	cameraInit(cam, eye, screen, up, width, height);
-	
-	return cam;
 }
 
 void cameraPoint(vec3 *screen, Camera *c, float sx, float sy) {
