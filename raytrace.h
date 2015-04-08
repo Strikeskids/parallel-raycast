@@ -11,7 +11,7 @@ typedef struct Ray_struct {
 	int index;
 } Ray;
 
-int rayTrace(Ray *ray, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest);
+int rayTrace(Ray *ray, Scene *scene, vec3 *src, vec3 *dest);
 
 #endif
 
