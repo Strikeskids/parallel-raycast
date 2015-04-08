@@ -129,7 +129,12 @@ void gatherLight(Color *color, pcg32_random_t *p, int level, Scene *scene, vec3 
 	}
 
 	vec3 norm;
+	vec3 offpnt;
+
 	shapeNorm(&norm, &ray->object->shape, &ray->pnt, ray->index);
+	offpnt = norm;
+	scale(&offpnt, 0.001);
+	add(&offpnt, &offpnt, &ray->pnt);
 
 	for (i=scene->lightCount;i-->0;) {
 		int shadowed = 0;
@@ -138,7 +143,7 @@ void gatherLight(Color *color, pcg32_random_t *p, int level, Scene *scene, vec3 
 		vec3 sourcePnt;
 		Ray shadower;
 		lightCenter(&sourcePnt, &scene->lights[i]);
-		if (rayTrace(&shadower, scene, 1, &ray->object, &ray->pnt, &sourcePnt)) {
+		if (rayTrace(&shadower, scene, 0, NULL, &offpnt, &sourcePnt)) {
 			float toLight = distance(&sourcePnt, &ray->pnt), toObj = distance(&shadower.pnt, &ray->pnt);
 			if (toLight > toObj) {
 				shadowed = 1;
@@ -174,7 +179,7 @@ void gatherLight(Color *color, pcg32_random_t *p, int level, Scene *scene, vec3 
 				continue;
 			add(&towards, &ray->pnt, &dir);
 
-			if (rayTrace(&bounced, scene, 1, &ray->object, &ray->pnt, &towards)) {
+			if (rayTrace(&bounced, scene, 0, NULL, &offpnt, &towards)) {
 				gatherLight(&inp, p, level+1, scene, &ray->pnt, &bounced);
 				lightModel(&cur, bounced.object, &norm, &ray->pnt, &inp, &bounced.pnt, to);
 				colorScale(&cur, 1.0/SAMPLE_COUNT);
