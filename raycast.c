@@ -143,8 +143,8 @@ float castTriangle(Triangle *s, vec3 *pos, vec3 *dir) {
 	return castThreeVec(&n, &s->a, &s->b, &s->c, pos, dir);
 }
 
-int rayTrace(Ray *ray, Scene *scene, int ignoreCount, SceneObject **ignore, vec3 *src, vec3 *dest) {
-	int i, j, skip;
+int rayTrace(Ray *ray, Scene *scene, vec3 *src, vec3 *dest) {
+	int i, j;
 
 	vec3 r;
 	float t;
@@ -159,15 +159,6 @@ int rayTrace(Ray *ray, Scene *scene, int ignoreCount, SceneObject **ignore, vec3
 	normalize(&r);
 
 	for (i=scene->objectCount;i-->0;) {
-		skip = 0;
-		for (j=ignoreCount;j-->0;) {
-			if (ignore[j] == &scene->objects[i]) {
-				skip = 1;
-				break;
-			}
-		}
-		if (skip) continue;
-		
 		t = castShape(&castIndex, &scene->objects[i].shape, src, &r);
 
 		if (t >= 0 && t < bestT) {
